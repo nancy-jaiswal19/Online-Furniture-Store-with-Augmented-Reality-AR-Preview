@@ -70,6 +70,11 @@ app.use(
   })
 );
 
+// ROOT ROUTE
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
 // ROUTES
 app.use("/api/users", userRoute);
 app.use("/api/products", productRoute);
@@ -87,10 +92,7 @@ app.use("/api/upload/blog", uploadBlogImageRoute);
 app.use("/api/orders", orderRoutes);
 app.use("/api/giftcards", giftCardRoutes);
 
-// ROOT ROUTE
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
+
 
 // 404 HANDLER
 app.use((req, res) => {
