@@ -31,7 +31,7 @@ router.post("/admin", isAuthenticated, isAdmin, async (req, res) => {
 
     res.status(201).json(blog);
   } catch (err) {
-    console.error("ADMIN BLOG CREATE ERROR 👉", err);
+    console.error("ADMIN BLOG CREATE ERROR ", err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -41,20 +41,20 @@ router.post("/", isAuthenticated, async (req, res) => {
   try {
     const { title, slug, excerpt, content, coverImage } = req.body;
 
-    // 🔒 BASIC VALIDATION
+    //  BASIC VALIDATION
     if (!title || !slug || !content) {
       return res.status(400).json({
         message: "Title, slug, and content are required",
       });
     }
 
-    // 🔒 NORMALIZE SLUG
+    //  NORMALIZE SLUG
     const cleanSlug = slug
       .toLowerCase()
       .trim()
       .replace(/\s+/g, "-");
 
-    // 🔒 CHECK DUPLICATE SLUG
+    //  CHECK DUPLICATE SLUG
     const existing = await Blog.findOne({ slug: cleanSlug });
     if (existing) {
       return res.status(409).json({
@@ -74,7 +74,7 @@ router.post("/", isAuthenticated, async (req, res) => {
 
     res.status(201).json(blog);
   } catch (err) {
-    console.error("BLOG CREATE ERROR 👉", err);
+    console.error("BLOG CREATE ERROR ", err);
     res.status(500).json({
       message: err.message,
     });
@@ -127,7 +127,7 @@ router.delete(
 
       res.json({ message: "Blog deleted successfully" });
     } catch (err) {
-      console.error("BLOG DELETE ERROR 👉", err);
+      console.error("BLOG DELETE ERROR ", err);
       res.status(500).json({ message: err.message });
     }
   }

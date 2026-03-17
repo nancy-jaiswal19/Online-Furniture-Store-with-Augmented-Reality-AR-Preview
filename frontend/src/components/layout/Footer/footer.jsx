@@ -92,12 +92,11 @@ const Footer = () => {
         )}
       </div>
 
-      {/* 👇 REST OF YOUR FOOTER (UNCHANGED) */}
       {/* MAIN FOOTER CONTENT */}
       <div className="max-w-7xl mx-auto px-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-18 mt-10">
         {/* BRAND */}
         <div>
-          <h1 className="text-4xl font-bold tracking-wide">FUNIO</h1>
+          <h1 className="text-4xl font-bold tracking-wide">HOMESPACE</h1>
           <p className="text-gray-700 mt-3 leading-relaxed">
             Crafted for comfort. Designed for elegance.
             Your luxury home journey starts here.
@@ -169,7 +168,7 @@ const Footer = () => {
       {/* BOTTOM BAR */}
       <div className="mt-20 border-t border-gray-300 pt-6">
         <div className="max-w-7xl mx-auto px-10 flex flex-col sm:flex-row justify-between text-gray-600 text-sm">
-          <p>© {new Date().getFullYear()} FUNIO — Crafted for Modern Living.</p>
+          <p>© {new Date().getFullYear()} HOMESPACE — Crafted for Modern Living.</p>
 
           <div className="flex gap-6">
             <Link to="/privacy">Privacy</Link>

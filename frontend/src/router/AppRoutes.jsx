@@ -61,10 +61,10 @@ const AppRoutes = () => {
   return (
     <Routes>
 
+        <Route path="/" element={<HomePage />} />
       {/* 🌍 GLOBAL LAYOUT (Navbar + TopBar on all these pages) */}
       <Route element={<MainLayout />}>
 
-        <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
 

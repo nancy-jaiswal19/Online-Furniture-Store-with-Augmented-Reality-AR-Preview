@@ -68,7 +68,7 @@ const RoomHotspotSection = ({ roomImg, products, roomSlug }) => {
       <img
         src={roomImg}
         alt="Room"
-        className="w-full block "
+        className="w- block "
       />
 
       {hotspots.map((p, i) => (

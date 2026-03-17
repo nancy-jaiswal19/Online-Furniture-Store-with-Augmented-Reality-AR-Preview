@@ -30,7 +30,7 @@ const PremiumPrivacyPolicy = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f6f4ef] text-[#1A1816] font-sans pt-30">
+    <div className="min-h-screen bg-[#f6f4ef] text-[#1A1816] font-sans pt-30 ">
       
       
 
@@ -87,39 +87,9 @@ const PremiumPrivacyPolicy = () => {
           ))}
         </section>
 
-        {/* FOOTER */}
-        <footer className="mt-20 flex flex-col md:flex-row justify-between gap-12">
-          <div className="max-w-xs">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#8a8177] mb-4">
-              Verification
-            </p>
-            <p className="text-[13px] leading-relaxed text-[#6b6258]">
-              This document is audited annually. Last revision: Nov 12, 2025.
-            </p>
-          </div>
+        
 
-          <div className="flex gap-16">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-[#8a8177] mb-2">
-                Legal
-              </p>
-              <ul className="text-[13px] space-y-2">
-                <li><Link to="/terms">Terms of Service</Link></li>
-                <li><Link to="/privacy">Privacy Policy</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-[#8a8177] mb-2">
-                Support
-              </p>
-              <ul className="text-[13px] space-y-2">
-                <li><Link to="/support">Help Center</Link></li>
-                <li><Link to="/contact">Contact</Link></li>
-              </ul>
-            </div>
-          </div>
-        </footer>
+            
 
       </main>
     </div>

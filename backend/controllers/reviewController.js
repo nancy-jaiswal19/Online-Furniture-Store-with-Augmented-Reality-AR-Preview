@@ -10,15 +10,13 @@ export const getReviews = async (req, res) => {
 
 export const addReview = async (req, res) => {
   try {
-    console.log("BODY 👉", req.body);
-    console.log("USER 👉", req.user);
     const { productId, rating, comment } = req.body;
 
     if (!rating || !comment) {
       return res.status(400).json({ message: "Rating and comment required" });
     }
 
-    // ✅ FIX HERE
+    
     const already = await Review.findOne({
       product: productId,
       user: req.user._id,
@@ -30,13 +28,13 @@ export const addReview = async (req, res) => {
 
     const review = await Review.create({
       product: productId,
-      user: req.user._id,     // ✅ FIX
+      user: req.user._id,     
       name: req.user.name,
       rating: Number(rating),
       comment,
     });
 
-    // 🔄 Update product rating correctly
+    //  Update product rating correctly
     const reviews = await Review.find({ product: productId });
 
     const avg =

@@ -6,6 +6,7 @@ import {
   FiShield,
   FiRefreshCcw,
 } from "react-icons/fi";
+
 import { FaHeart } from "react-icons/fa";
 import toast from "react-hot-toast";
 
@@ -143,8 +144,7 @@ const ProductDetailPage = () => {
           {/* IMAGE */}
           <div className="bg-white rounded-3xl p-14 flex items-center justify-center">
             <img
-              src={`${import.meta.env.VITE_API_URL}${product.img}`}
-
+              src={product.img}
               alt={product.name}
               className="max-h-[420px] object-contain"
             />

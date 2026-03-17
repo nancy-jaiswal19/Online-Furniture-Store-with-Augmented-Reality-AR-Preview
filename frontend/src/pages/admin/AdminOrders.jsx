@@ -4,12 +4,16 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
 
   const load = () => {
-    fetch("http://localhost:3000/api/orders/admin", {
-      credentials: "include",
+  fetch("https://capiteaux-archie-zincographic.ngrok-free.dev/api/orders/admin", {
+    credentials: "include",
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      setOrders(data.orders || []); 
     })
-      .then((r) => r.json())
-      .then(setOrders);
-  };
+    .catch(console.error);
+};
+
 
   useEffect(load, []);
 

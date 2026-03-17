@@ -36,10 +36,10 @@ router.post("/subscribe", async (req, res) => {
     if (exists)
       return res.status(409).json({ message: "Already subscribed" });
 
-    // ✅ SAVE TO DB
+    //  SAVE TO DB
     await Newsletter.create({ email });
 
-    // ✅ SEND WELCOME EMAIL (THIS WAS MISSING)
+    //  SEND WELCOME EMAIL (THIS WAS MISSING)
     await sendWelcomeEmail(email);
 
     res.status(201).json({ message: "Subscribed successfully" });

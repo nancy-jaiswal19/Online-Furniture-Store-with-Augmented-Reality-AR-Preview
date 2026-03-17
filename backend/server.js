@@ -1,3 +1,5 @@
+
+// LOAD ENV
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -10,7 +12,7 @@ import { Server } from "socket.io";
 
 import connectDB from "./database/db.js";
 
-// Routes
+// ROUTES
 import userRoute from "./routes/userRoute.js";
 import productRoute from "./routes/productRoute.js";
 import cartRoute from "./routes/cartRoute.js";
@@ -27,17 +29,17 @@ import uploadBlogImageRoute from "./routes/uploadBlogImage.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import giftCardRoutes from "./routes/giftCardRoutes.js";
 
-// ===============================
-// CREATE EXPRESS APP
-// ===============================
+// CREATE APP
 const app = express();
 
-// ===============================
 // MIDDLEWARE
-// ===============================
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      process.env.FRONTEND_URL,
+    ],
     credentials: true,
   })
 );
@@ -45,19 +47,18 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Debug logger
+// DEBUG LOGGER
 app.use((req, res, next) => {
   console.log("REQUEST:", req.method, req.url);
   next();
 });
 
-// Static images
+// STATIC FILES
 app.use(
   "/images",
   express.static(path.join(process.cwd(), "public/images"))
 );
 
-// ✅ ADD / FIX THIS (DO NOT COMMENT)
 app.use(
   "/models",
   express.static(path.join(process.cwd(), "public/models"), {
@@ -69,11 +70,7 @@ app.use(
   })
 );
 
-
-
-// ===============================
 // ROUTES
-// ===============================
 app.use("/api/users", userRoute);
 app.use("/api/products", productRoute);
 app.use("/api/cart", cartRoute);
@@ -90,41 +87,61 @@ app.use("/api/upload/blog", uploadBlogImageRoute);
 app.use("/api/orders", orderRoutes);
 app.use("/api/giftcards", giftCardRoutes);
 
+// ROOT ROUTE
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
 
+// 404 HANDLER
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
+// ERROR HANDLER 
+app.use((err, req, res, next) => {
+  console.error("ERROR:", err.stack);
+  res.status(500).json({ message: "Something went wrong" });
+});
 
-// ===============================
-// DATABASE
-// ===============================
-connectDB();
-
-// ===============================
-// HTTP SERVER + SOCKET.IO
-// ===============================
+// CREATE SERVER
 const server = http.createServer(app);
 
+// SOCKET.IO
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      process.env.FRONTEND_URL,
+    ],
     credentials: true,
   },
 });
 
 io.on("connection", (socket) => {
-  console.log("🔌 Socket connected:", socket.id);
+  console.log(" Socket connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("❌ Socket disconnected:", socket.id);
+    console.log(" Socket disconnected:", socket.id);
   });
 });
 
-// 🔥 EXPORT IO FOR CONTROLLERS
+// EXPORT IO
 export { io };
 
-// ===============================
-// START SERVER
-// ===============================
+// START SERVER ONLY AFTER DB CONNECTS
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+
+connectDB()
+  .then(() => {
+    console.log(" MongoDB Connected");
+
+    server.listen(PORT, () => {
+      console.log(` Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(" MongoDB Connection Failed:", err);
+    process.exit(1);
+  });
+

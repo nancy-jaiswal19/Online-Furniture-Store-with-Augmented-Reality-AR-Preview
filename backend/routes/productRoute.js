@@ -11,14 +11,14 @@ import {
 
 const router = express.Router();
 
-/* 🔥 STATIC ROUTES FIRST */
+/* STATIC ROUTES FIRST */
 router.get("/best-sellers", getBestSellers);
 
 /* MAIN ROUTES */
 router.get("/", listProducts);
 router.post("/", createProduct);
 
-/* ❗ DYNAMIC ROUTES LAST */
+/*  DYNAMIC ROUTES LAST */
 router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);

@@ -38,7 +38,12 @@ export default function OrdersTab() {
   >
     {/* IMAGE */}
     <img
-      src={o.items[0]?.image}
+      src={
+  o.items[0]?.img?.startsWith("http")
+    ? o.items[0].img
+    : `${import.meta.env.VITE_API_URL}${o.items[0].img}`
+}
+
       alt={o.items[0]?.name}
       className="w-20 h-20 object-cover rounded-lg border"
     />

@@ -141,3 +141,7 @@ body::-webkit-scrollbar {
 .animate-fade-out-down {
   animation: fadeOutDown 0.25s ease-in forwards;
 }
+
+body {
+  caret-color: transparent;
+}

@@ -22,10 +22,8 @@ const Checkout = () => {
 
   const total = isGiftCard ? state.amount : state.total;
   const items = isCart ? state.items : [];
-
   const finalTotal = Math.max(total - giftUsed, 0);
 
-  // 🎁 APPLY GIFT CARD
   const applyGiftCard = async () => {
     const res = await fetch("http://localhost:3000/api/giftcards/validate", {
       method: "POST",
@@ -42,14 +40,12 @@ const Checkout = () => {
     }
   };
 
-  // 💳 PAY
   const handlePayment = async () => {
     try {
-      // 🎁 BUYING A GIFT CARD
       if (isGiftCard) {
         const res = await fetch("http://localhost:3000/api/giftcards", {
           method: "POST",
-          credentials: "include", // 🔥 REQUIRED
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: state.amount,
@@ -68,14 +64,13 @@ const Checkout = () => {
             amount: state.amount,
             email: state.email,
             message: state.message,
-            code: data.code, // ✅ REAL CODE
+            code: data.code,
           },
         });
 
         return;
       }
 
-      // 🛒 CART CHECKOUT
       await fetch("http://localhost:3000/api/orders", {
         method: "POST",
         credentials: "include",
@@ -104,47 +99,100 @@ const Checkout = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[#fbf9f6] flex items-center justify-center px-6 pt-30">
-      <div className="max-w-lg w-full bg-white rounded-3xl p-10 shadow-xl">
+    <section className="min-h-screen bg-[#fbf9f6] flex items-center justify-center px-6 pt-32">
+      <div className="w-full max-w-md bg-white rounded-3xl px-10 py-12 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
 
+        {/* HEADER */}
+        <div className="mb-10 text-center">
+          <p className="uppercase tracking-[0.3em] text-xs text-gray-500">
+            Secure Checkout
+          </p>
+          <h1 className="text-3xl font-semibold text-[#1a1816] mt-3">
+            Review & Pay
+          </h1>
+        </div>
+
+        {/* CART SUMMARY */}
         {isCart && (
           <>
-            <div className="mb-4">
+            <div className="space-y-3 mb-8">
               {items.map((it) => (
-                <div key={it.product._id} className="flex justify-between text-sm">
-                  <span>{it.product.name} × {it.quantity}</span>
-                  <span>₹{it.product.price * it.quantity}</span>
+                <div
+                  key={it.product._id}
+                  className="flex justify-between text-sm text-gray-700"
+                >
+                  <span>
+                    {it.product.name} × {it.quantity}
+                  </span>
+                  <span className="font-medium text-[#1a1816]">
+                    ₹{it.product.price * it.quantity}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* APPLY GIFT CARD */}
-            <div className="bg-[#f7f3ed] p-4 rounded mb-4">
+            {/* GIFT CARD */}
+            <div className="bg-[#f7f3ed] rounded-2xl p-6 mb-8">
+              <p className="text-sm font-medium text-[#1a1816] mb-3">
+                Have a gift card?
+              </p>
+
               <input
                 value={giftCode}
                 onChange={(e) => setGiftCode(e.target.value)}
-                placeholder="Gift card code"
-                className="border px-3 py-2 w-full mb-2"
+                placeholder="Enter gift card code"
+                className="
+                  w-full
+                  bg-white
+                  border border-gray-300
+                  rounded-full
+                  px-5 py-3
+                  text-sm
+                  outline-none
+                  focus:border-black
+                  mb-4
+                "
               />
+
               <button
                 onClick={applyGiftCard}
-                className="bg-black text-white px-4 py-2 w-full rounded"
+                className="
+                  w-full
+                  border border-black
+                  rounded-full
+                  py-3
+                  text-sm
+                  tracking-wide
+                  hover:bg-black hover:text-white
+                  transition
+                "
               >
                 Apply Gift Card
               </button>
 
               {giftUsed > 0 && (
-                <p className="text-green-700 mt-2">
-                  Applied: -₹{giftUsed}
+                <p className="text-green-700 text-sm mt-3">
+                  Gift applied: −₹{giftUsed}
                 </p>
               )}
             </div>
           </>
         )}
 
+        {/* PAY BUTTON */}
         <button
           onClick={handlePayment}
-          className="w-full bg-black text-white py-4 rounded"
+          className="
+            w-full
+            bg-[#1a1816]
+            text-white
+            py-4
+            rounded-full
+            tracking-wide
+            text-sm
+            hover:bg-black
+            transition
+          "
         >
           Pay ₹{finalTotal}
         </button>

@@ -12,7 +12,7 @@ export const sendEmail = async ({ to, subject, text, cc }) => {
   await transporter.sendMail({
     from: `"Homespace Support" <${process.env.MAIL_USER}>`,
     to,
-    cc, // 🔥 CC yourself automatically
+    cc, // CC yourself automatically
     subject,
     text,
   });

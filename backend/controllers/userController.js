@@ -1,57 +1,60 @@
-// controllers/userController.js
+
 import { User } from "../models/userModel.js";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyEmail } from "../emailVerify/verifyEmail.js";
-import { Session } from '../models/sessionModel.js';
+import { Session } from "../models/sessionModel.js";
 import { sendOTPMail } from "../emailVerify/sendOTPMail.js";
 
+/* ================= REGISTER ================= */
 
-// ================= REGISTER =================
+
 export const register = async (req, res) => {
-  console.log("REGISTER CONTROLLER HIT");
+  console.log("🔥 REGISTER CONTROLLER HIT");
 
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
-    }
+    console.log("Step 1");
 
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ success: false, message: "User already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Step 2");
 
     const newUser = await User.create({
       firstName,
       lastName,
       email,
-      password: hashedPassword,
+      password,
       isVerified: false,
     });
 
-    const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, { expiresIn: "10m" });
+    console.log("Step 3 USER CREATED");
 
-    await verifyEmail(token, email);
-    newUser.token = token;
-    await newUser.save();
+    const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY, {
+      expiresIn: "10m",
+    });
+
+    console.log("🔥 VERIFY TOKEN:", token); // IMPORTANT
 
     return res.status(201).json({
       success: true,
-      message: "User registered successfully. Check your email to verify.",
-      user: newUser,
+      message: "User registered",
     });
 
   } catch (error) {
+    console.log("ERROR:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= VERIFY EMAIL =================
+/* ================= VERIFY EMAIL ================= */
 export const verify = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -59,7 +62,7 @@ export const verify = async (req, res) => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(400).json({
         success: false,
-        message: "Authorization token is missing or invalid",
+        message: "Token missing or invalid",
       });
     }
 
@@ -70,124 +73,127 @@ export const verify = async (req, res) => {
       decoded = jwt.verify(token, process.env.SECRET_KEY);
     } catch (err) {
       if (err.name === "TokenExpiredError") {
-        return res.status(400).json({ success: false, message: "Registration token expired" });
+        return res.status(400).json({ success: false, message: "Token expired" });
       }
-      return res.status(400).json({ success: false, message: "Token verification failed" });
+      return res.status(400).json({ success: false, message: "Invalid token" });
     }
 
     const user = await User.findById(decoded.id);
-    if (!user) return res.status(400).json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "User not found" });
+    }
 
-    user.token = null;
     user.isVerified = true;
     await user.save();
 
-    const accessToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "10d" });
+    const accessToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "10d",
+    });
 
     return res.status(200).json({
       success: true,
       message: "Email verified successfully",
       accessToken,
-      user,
     });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= RE-VERIFY EMAIL =================
+/* ================= RE-VERIFY ================= */
 export const reVerify = async (req, res) => {
   try {
     const { email } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ success: false, message: "User not found" });
-    if (user.isVerified) return res.status(400).json({ success: false, message: "User already verified" });
+    if (!user)
+      return res.status(400).json({ success: false, message: "User not found" });
 
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "10m" });
+    if (user.isVerified)
+      return res.status(400).json({ success: false, message: "Already verified" });
+
+    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "10m",
+    });
 
     await verifyEmail(token, email);
-    user.token = token;
-    await user.save();
 
-    return res.status(200).json({ success: true, message: "Verification email sent again" });
-
+    return res.status(200).json({
+      success: true,
+      message: "Verification email sent",
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= LOGIN =================
+/* ================= LOGIN ================= */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password)
+    if (!email || !password) {
       return res.status(400).json({ success: false, message: "All fields are required" });
+    }
 
     const existingUser = await User.findOne({ email });
-    if (!existingUser)
-      return res.status(400).json({ success: false, message: "User not exists" });
+    if (!existingUser) {
+      return res.status(400).json({ success: false, message: "User not found" });
+    }
 
-    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-    if (!isPasswordValid)
-      return res.status(400).json({ success: false, message: "Invalid Credentials" });
+    const isPasswordValid = await existingUser.matchPassword(password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
+    }
 
-    if (!existingUser.isVerified)
-      return res.status(400).json({ success: false, message: "Verify your account first" });
+    if (!existingUser.isVerified) {
+      return res.status(400).json({ success: false, message: "Verify your email first" });
+    }
 
-    // Tokens
-    const accessToken = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY, { expiresIn: "10d" });
-    const refreshToken = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY, { expiresIn: "30d" });
+    const accessToken = jwt.sign(
+      { id: existingUser._id },
+      process.env.SECRET_KEY,
+      { expiresIn: "10d" }
+    );
 
-    // SET COOKIE HERE (this is what was missing)
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,       // MUST be false in localhost
-      sameSite: "lax",     // MUST be lax in localhost
-      maxAge: 10 * 24 * 60 * 60 * 1000,  //10days
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1 * 24 * 60 * 60 * 1000,
     });
 
-    existingUser.isLoggedIn = true;
-    await existingUser.save();
-
-    const existingSession = await Session.findOne({ userId: existingUser._id });
-    if (existingSession) await Session.deleteOne({ userId: existingUser._id });
-
+    // Optional session
+    await Session.deleteMany({ userId: existingUser._id });
     await Session.create({ userId: existingUser._id });
 
-    // Send user info but NOT token
+    const user = await User.findById(existingUser._id).select(
+      "-password -otp -otpExpiry"
+    );
+
     return res.status(200).json({
       success: true,
-      message: `Welcome back ${existingUser.firstName}`,
-      user: existingUser,
+      message: `Welcome back ${user.firstName}`,
+      user,
     });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-
-// ================= LOGOUT =================
+/* ================= LOGOUT ================= */
 export const logout = async (req, res) => {
   try {
     const userId = req.id;
 
     await Session.deleteMany({ userId });
-    await User.findByIdAndUpdate(userId, { isLoggedIn: false });
 
     res.clearCookie("accessToken");
 
     return res.status(200).json({
       success: true,
-      message: "User logged out successfully",
+      message: "Logged out successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -196,8 +202,7 @@ export const logout = async (req, res) => {
   }
 };
 
-
-// ================= FORGOT PASSWORD =================
+/* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -213,25 +218,18 @@ export const forgotPassword = async (req, res) => {
     user.otpExpiry = otpExpiry;
     await user.save();
 
-    try {
-      await sendOTPMail(otp, email);
-      return res.status(200).json({ success: true, message: "OTP sent successfully" });
+    await sendOTPMail(otp, email);
 
-    } catch (err) {
-      user.otp = null;
-      user.otpExpiry = null;
-      await user.save();
-
-      return res.status(500).json({ success: false, message: "Failed to send OTP" });
-    }
-
+    return res.status(200).json({
+      success: true,
+      message: "OTP sent successfully",
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= VERIFY OTP =================
+/* ================= VERIFY OTP ================= */
 export const verifyOTP = async (req, res) => {
   try {
     const { otp } = req.body;
@@ -255,21 +253,23 @@ export const verifyOTP = async (req, res) => {
     user.otpExpiry = null;
     await user.save();
 
-    return res.status(200).json({ success: true, message: "OTP verified successfully" });
-
+    return res.status(200).json({
+      success: true,
+      message: "OTP verified successfully",
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= CHANGE PASSWORD =================
+/* ================= CHANGE PASSWORD ================= */
 export const changePassword = async (req, res) => {
   try {
     const { newPassword, confirmPassword } = req.body;
     const email = req.params.email;
 
     const user = await User.findOne({ email });
+
     if (!user)
       return res.status(400).json({ success: false, message: "User not found" });
 
@@ -279,43 +279,40 @@ export const changePassword = async (req, res) => {
     if (newPassword !== confirmPassword)
       return res.status(400).json({ success: false, message: "Passwords do not match" });
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    user.password = hashedPassword;
+    user.password = newPassword; // ✅ pre-save hook will hash
     await user.save();
 
-    return res.status(200).json({ success: true, message: "Password changed successfully" });
-
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= ALL USERS =================
+/* ================= ADMIN ================= */
 export const allUser = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select("-password -otp -otpExpiry");
     return res.status(200).json({ success: true, users });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// ================= GET USER BY ID =================
 export const getUserById = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const user = await User.findById(userId).select("-password -otp -otpExpiry -token");
+    const user = await User.findById(userId).select(
+      "-password -otp -otpExpiry"
+    );
 
     if (!user)
       return res.status(404).json({ success: false, message: "User not found" });
 
     return res.status(200).json({ success: true, user });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

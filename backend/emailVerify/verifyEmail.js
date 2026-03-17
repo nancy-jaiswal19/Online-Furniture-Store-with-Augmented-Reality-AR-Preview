@@ -14,7 +14,7 @@ export const verifyEmail = async (token, email) => {
     const verifyLink = `${process.env.FRONTEND_URL}/verify/${token}`;
 
     const mailOptions = {
-      from: `"Your App Name" <${process.env.MAIL_USER}>`,
+      from: `"HOMESPACE" <${process.env.MAIL_USER}>`,
       to: email,
       subject: "Verify Your Email",
       html: `

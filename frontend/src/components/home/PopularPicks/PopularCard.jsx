@@ -14,10 +14,8 @@ const PopularCard = ({ product }) => {
     setWishlistCount,
   } = useApp();
 
-  // ⛔ WAIT until wishlist loads
   if (wishlistLoading) return null;
 
-  // ✅ DERIVED STATE (NO LOCAL STATE)
   const liked = wishlistIds.includes(product._id);
 
   const handleWishlist = async (e) => {
@@ -56,12 +54,16 @@ const PopularCard = ({ product }) => {
           )}
         </button>
 
-        {(product.imageUrl || product.img) && (
+        {(product.imageUrl || product.img) ? (
           <img
-            src={`http://localhost:3000${product.img}`}
+            src={product.imageUrl || product.img}
             alt={product.name}
             className="w-full h-full object-cover transition group-hover:scale-110"
           />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400">
+            No Image
+          </div>
         )}
       </div>
 

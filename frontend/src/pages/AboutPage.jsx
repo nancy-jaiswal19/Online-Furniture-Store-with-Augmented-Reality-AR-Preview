@@ -9,7 +9,7 @@ export default function About() {
       <div className="bg-white">
 
         {/* HERO SECTION */}
-        <section className="px-10 py-24 text-center max-w-5xl mx-auto">
+        <section className="px-10 pt-30 -pb-5 text-center max-w-5xl mx-auto">
           <h1 className="text-6xl font-serif tracking-tight text-[#111]">
             Crafted for Modern Living
           </h1>
@@ -42,7 +42,7 @@ export default function About() {
             <img
               src="/src/assets/about/about1.jpg"
               alt="Modern interior"
-              className="w-full h-full object-cover"
+              className="w-full h-[300px] object-cover"
             />
           </div>
         </section>
@@ -85,16 +85,16 @@ export default function About() {
         {/* AR SECTION (VERY IMPORTANT FOR YOUR PROJECT) */}
         <section className="px-10 py-24 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
 
-          <div className="rounded-3xl overflow-hidden shadow-lg">
+          <div className="">
             <img
-              src="/src/assets/about/about-ar.jpg"
+              src="/src/assets/about/about-ar.png"
               alt="AR Furniture Preview"
-              className="w-full h-full object-cover"
+              className="w-full h-[500px] object-contain"
             />
           </div>
 
           <div>
-            <h2 className="text-4xl font-serif mb-6">
+            <h2 className="text-4xl font-serif ">
               Experience Furniture in AR
             </h2>
             <p className="text-gray-600 leading-relaxed mb-4">
@@ -108,16 +108,7 @@ export default function About() {
 
         </section>
 
-        {/* FINAL QUOTE */}
-        <section className="text-center px-10 py-24 bg-[#111] text-white">
-          <h2 className="text-4xl font-serif mb-6">
-            Designed to Feel Like Home
-          </h2>
-          <p className="text-gray-300 max-w-3xl mx-auto">
-            FUNIO is more than furniture — it’s a way of living thoughtfully,
-            beautifully, and comfortably.
-          </p>
-        </section>
+       
 
       </div>
     </>

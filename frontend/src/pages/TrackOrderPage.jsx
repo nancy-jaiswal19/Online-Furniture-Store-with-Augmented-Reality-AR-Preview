@@ -31,7 +31,7 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <section className="pt-32 max-w-xl mx-auto px-6">
+    <section className="pt-32 max-w-xl mx-auto px-6 py-35 my-30">
       <h1 className="text-2xl mb-6">Track Your Order</h1>
 
       <div className="flex gap-3">

@@ -13,18 +13,18 @@ export const submitContact = async (req, res) => {
       });
     }
 
-    // 1️⃣ Save message in DB
+    //  Save message in DB
     await Contact.create({ name, email, message });
 
-    // 2️⃣ Emit socket event (safe)
+    //  Emit socket event (safe)
     const io = req.app.get("io");
     if (io) {
       io.emit("new_contact_message");
     }
 
-    // 3️⃣ SEND EMAIL TO ADMIN (THIS IS THE PART YOU ASKED ABOUT 👇)
+    //  SEND EMAIL TO ADMIN 
     await sendEmail({
-      to: process.env.MAIL_USER,   // ✅ recipient
+      to: process.env.MAIL_USER,  
       subject: "New Contact Message - Homespace",
       text: `
 Name: ${name}

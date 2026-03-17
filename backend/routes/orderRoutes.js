@@ -28,7 +28,7 @@ router.get("/my", isAuthenticated, async (req, res) => {
 
 
 
-/* ================= CREATE ORDER ================= */
+/* CREATE ORDER  */
 router.post("/", isAuthenticated, async (req, res) => {
   try {
     const { items, totalAmount, giftCode, giftUsed } = req.body;
@@ -68,7 +68,7 @@ router.post("/", isAuthenticated, async (req, res) => {
     name: item.name,
     price: item.price,
     quantity: item.quantity,
-    img: item.img, // ✅ IMAGE SAVED
+    img: item.img, 
   })),
   total: totalAmount,
 });
@@ -83,7 +83,7 @@ router.post("/", isAuthenticated, async (req, res) => {
 
 
 
-/* ================= ADMIN ORDERS ================= */
+/*  ADMIN ORDERS */
 router.get("/admin", isAuthenticated, isAdmin, async (req, res) => {
   const orders = await Order.find()
     .populate("user", "email")
@@ -93,7 +93,7 @@ router.get("/admin", isAuthenticated, isAdmin, async (req, res) => {
 
 });
 
-/* ================= UPDATE STATUS ================= */
+/* UPDATE STATUS  */
 router.put("/admin/:id/status", isAuthenticated, isAdmin, async (req, res) => {
   const { status } = req.body;
 
@@ -106,8 +106,8 @@ router.put("/admin/:id/status", isAuthenticated, isAdmin, async (req, res) => {
   res.json(order);
 });
 
-/* ================= TRACK ORDER ================= */
-// /api/orders/track?orderId=e12d0c
+/* TRACK ORDER  */
+
 router.get("/track", async (req, res) => {
   const { orderId } = req.query;
 
